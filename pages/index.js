@@ -1,65 +1,103 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React , { useEffect, useState } from 'react';
+import { get  } from 'lodash';
 
-export default function Home() {
+import { TextStyle, EmptyState, Layout, Page, Card, DataTable} from '@shopify/polaris';
+import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
+import store from 'store-js';
+//import ResourceListWithProducts from '../components/ResourceList';
+import axios from "axios";
+
+const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
+const defaultRows = [
+  ['Hari', 'hkolli@ftdi.com', 'Hyderabad', 4, '$500.00'],
+  ['Cherith', 'cherith@mangocrab.com', 'Gudivada', 1, '$39.00']
+];
+
+const Index = ( props ) => {
+  const [loading, setLoading ] = useState(false);
+  const [rows, setRows ] = useState(defaultRows);
+  
+  console.log(props);
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div className='harinath' style={{paddingTop: '10px'}}>
+    
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+     
+        <Page style={{margin: '10px'}}>
+         
+          <Layout style={{margin: '10px'}}>
+            <Card title="Customer dashboard" sectioned style={{margin: '10px'}}>
+            <DataTable
+                columnContentTypes={[
+                  'text',
+                  'text',
+                  'text',
+                  'numeric',
+                  'numeric',
+                ]}
+                headings={[
+                  'Full Name',
+                  'Email',
+                  'City',
+                  'Orders',
+                  'Total Spent',
+                ]}
+                rows={props.customers || rows}
+              /> 
+            
+            </Card>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          </Layout>
+      
+        </Page>
+        {/* <Page
+          title="Page Title"
+          breadcrumbs={[{ content: 'Settimgs', url: '/annotated-layout'}]}
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+          <Layout>
+            <EmptyState
+              heading="Empty State Heading"
+              action={{
+                content: 'Select products',
+                onAction: () => console.log('clicked'),
+                onMouseEnter: () => console.log('clicked')
+              }}
+              image={img}
+            >
+              <p>Select Productsto change their price temporarirly hari</p>
+            </EmptyState>
+          </Layout>
+          
+        </Page> */}
+    </div> 
+    
+    
+    
+  );
 }
+
+Index.getInitialProps = async (ctx) => {
+  console.log('get initial props');
+  const res = {} ;//await axios.get('https://fb582b046ed1.ngrok.io/api/customers')
+  //const json = await res.json();
+  console.log('---------------');
+  const customers = get(res,'data.customers', []);
+  console.log(customers);
+
+  const normalizedData = customers.map( customer => {
+    return [
+      customer.first_name,
+      customer.email,
+      customer.addresses[0].city,
+      customer.orders_count,
+      customer.total_spent
+    ];
+  });
+  console.log('normalizedData');
+
+  console.log(normalizedData);
+  return { customers: normalizedData }
+}
+
+export default Index;
