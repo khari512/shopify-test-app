@@ -4,7 +4,7 @@ import { get  } from 'lodash';
 import { TextStyle, EmptyState, Layout, Page, Card, DataTable} from '@shopify/polaris';
 import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
 import store from 'store-js';
-//import ResourceListWithProducts from '../components/ResourceList';
+import ResourceListWithProducts from '../components/ResourceList';
 import axios from "axios";
 
 const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
@@ -43,7 +43,7 @@ const Index = ( props ) => {
                   'Orders',
                   'Total Spent',
                 ]}
-                rows={props.customers || rows}
+                rows={props.customers}
               /> 
             
             </Card>
@@ -79,7 +79,8 @@ const Index = ( props ) => {
 
 Index.getInitialProps = async (ctx) => {
   console.log('get initial props');
-  const res = {} ;//await axios.get('https://fb582b046ed1.ngrok.io/api/customers')
+  const { APP_HOST } = process.env;;
+  const res = await axios.get(`${APP_HOST}/api/customers`)
   //const json = await res.json();
   console.log('---------------');
   const customers = get(res,'data.customers', []);
