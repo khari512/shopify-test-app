@@ -17,7 +17,8 @@ import { ApolloProvider } from 'react-apollo';
 class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props;
-    const config = { apiKey: 'a1b6738b2089a08bf81da3abc1efb5d9', shopOrigin: Cookies.get("shopOrigin"), forceRedirect: true };
+    const shopOrigin = Cookies.get("shopOrigin") || 'hydflowers.myshopify.com';
+    const config = { apiKey: 'a1b6738b2089a08bf81da3abc1efb5d9', shopOrigin: shopOrigin, forceRedirect: true };
 
     return (
       <React.Fragment>
